@@ -1,28 +1,64 @@
 // export {vuex}
 let Vue;
-
+const forEach = (obj,cb)=>{
+    Object.keys(obj).forEach(key=>{
+        cb(key,obj[key])
+    })
+};
 class Store {
-    constructor(options={}) {
-     // this.state =   options.state;
+    constructor(options = {}) {
+        // this.state =   options.state;
         this.data = new Vue({
-            data(){
-                return{
-                    state:options.state
+            data() {
+                return {
+                    state: options.state
                 }
             }
         });
-      let getters = options.getters;
-      this.getters = {};
-      Object.keys(getters).forEach(getterName=>{
-          Object.defineProperty(this.getters,getterName,{
-              get:()=>{
-                  return getters[getterName](this.state)
-              }
-          })
-      })
-
+        let getters = options.getters;
+        this.getters = {};
+        // Object.keys(getters).forEach(getterName => {
+        //     Object.defineProperty(this.getters, getterName, {
+        //         get: () => {
+        //             return getters[getterName](this.state)
+        //         }
+        //     })
+        // })
+        forEach(getters,(getterName,fn)=>{
+            Object.defineProperty(this.getters, getterName, {
+                get: () => {
+                    return fn(this.state)
+                }
+            })
+        });
+        let mutations = options.mutations;
+        this.mutations = {};
+        // Object.keys(mutations).forEach(mutationName => {
+        //     this.mutations[mutationName] = (payload) => {
+        //         mutations[mutationName](this.state, payload)
+        //     }
+        // })
+        forEach(mutations,(mutationName,fn)=>{
+            this.mutations[mutationName] = (payload) => {
+                fn(this.state, payload)
+            }
+        })
+        let actions = options.actions;
+        this.actions = {};
+        forEach(actions,(actionName,fn)=>{
+            this.actions[actionName] = (payload) => {
+                fn(this, payload)
+            }
+        })
     }
-    get state (){
+    dispatch= (actionName,payload)=>{
+        this.actions[actionName](payload)
+    }
+    commit = (mutationName, payload) => {
+        this.mutations[mutationName](payload)
+    };
+
+    get state() {
         return this.data.state
     }
 }

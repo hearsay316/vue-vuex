@@ -6,6 +6,8 @@
       今年是2020多少月{{$store.state.age}}
       这个是{{$store.getters.myAge}}
     </p>
+    <button @click="addClick">按钮</button>
+    <button @click="dispatchAddClick">异步修改</button>
   </div>
 </template>
 
@@ -22,6 +24,15 @@ export default {
     // setInterval(()=>{
     //   this.$store.state.age +=this.$store.state.age
     // },1000)
+  },
+  methods:{
+    addClick(){
+      console.log(11)
+      this.$store.commit("addAge",10)
+    },
+    dispatchAddClick(){
+      this.$store.dispatch("addAge",100)
+    }
   }
 }
 </script>
